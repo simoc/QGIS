@@ -17,7 +17,7 @@ class QgsMapSettings
     //! The actual visible extent used for rendering could be slightly different
     //! since the given extent may be expanded in order to fit the aspect ratio
     //! of output size. Use visibleExtent() to get the resulting extent.
-    void setExtent( const QgsRectangle& rect );
+    void setExtent( const QgsRectangle& rect, bool magnified = true );
 
     //! Return the size of the resulting map image
     QSize outputSize() const;
@@ -38,6 +38,13 @@ class QgsMapSettings
     int outputDpi() const;
     //! Set DPI used for conversion between real world units (e.g. mm) and pixels
     void setOutputDpi( int dpi );
+
+    //! Set the magnification factor.
+    //! @note added in 2.16
+    void setMagnificationFactor( double factor );
+    //! Return the magnification factor.
+    //! @note added in 2.16
+   double magnificationFactor() const;
 
     //! Get list of layer IDs for map rendering
     //! The layers are stored in the reverse order of how they are rendered (layer with index 0 will be on top)
@@ -203,6 +210,18 @@ class QgsMapSettings
     void readXML( QDomNode& theNode );
 
     void writeXML( QDomNode& theNode, QDomDocument& theDoc );
+
+    /** Sets the segmentation tolerance applied when rendering curved geometries
+    @param tolerance the segmentation tolerance*/
+    void setSegmentationTolerance( double tolerance );
+    /** Gets the segmentation tolerance applied when rendering curved geometries*/
+    double segmentationTolerance() const;
+    /** Sets segmentation tolerance type (maximum angle or maximum difference between curve and approximation)
+    @param type the segmentation tolerance typename*/
+    void setSegmentationToleranceType( QgsAbstractGeometryV2::SegmentationToleranceType type );
+    /** Gets segmentation tolerance type (maximum angle or maximum difference between curve and approximation)*/
+    QgsAbstractGeometryV2::SegmentationToleranceType segmentationToleranceType() const;
+
 
   protected:
 

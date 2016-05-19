@@ -50,6 +50,16 @@ class QgsMapCanvas : QGraphicsView
     //! Destructor
     ~QgsMapCanvas();
 
+    //! Sets the factor of magnification to apply to the map canvas. Indeed, we
+    //! increase/decrease the DPI of the map settings according to this factor
+    //! in order to render marker point, labels, ... bigger.
+    //! @note added in 2.16
+    void setMagnificationFactor( double level );
+
+    //! Returns the magnification factor
+    //! @note added in 2.16
+    double magnificationFactor() const;
+
     void setLayerSet( QList<QgsMapCanvasLayer>& layers );
 
     void setCurrentLayer( QgsMapLayer* layer );
@@ -382,6 +392,13 @@ class QgsMapCanvas : QGraphicsView
      * @note not available in python bindings
      */
     // const QgsExpressionContextScope& expressionContextScope() const;
+
+     /** Sets the segmentation tolerance applied when rendering curved geometries
+    @param tolerance the segmentation tolerance*/
+    void setSegmentationTolerance( double tolerance );
+    /** Sets segmentation tolerance type (maximum angle or maximum difference between curve and approximation)
+    @param type the segmentation tolerance typename*/
+    void setSegmentationToleranceType( QgsAbstractGeometryV2::SegmentationToleranceType type );
 
   public slots:
 

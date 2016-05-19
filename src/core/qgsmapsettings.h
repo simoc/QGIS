@@ -21,6 +21,7 @@
 #include <QSize>
 #include <QStringList>
 
+#include "qgsabstractgeometryv2.h"
 #include "qgscoordinatereferencesystem.h"
 #include "qgsdatumtransformstore.h"
 #include "qgsmaptopixel.h"
@@ -64,7 +65,7 @@ class CORE_EXPORT QgsMapSettings
     //! The actual visible extent used for rendering could be slightly different
     //! since the given extent may be expanded in order to fit the aspect ratio
     //! of output size. Use visibleExtent() to get the resulting extent.
-    void setExtent( const QgsRectangle& rect );
+    void setExtent( const QgsRectangle& rect, bool magnified = true );
 
     //! Return the size of the resulting map image
     QSize outputSize() const;
@@ -85,6 +86,13 @@ class CORE_EXPORT QgsMapSettings
     int outputDpi() const;
     //! Set DPI used for conversion between real world units (e.g. mm) and pixels
     void setOutputDpi( int dpi );
+
+    //! Set the magnification factor.
+    //! @note added in 2.16
+    void setMagnificationFactor( double factor );
+    //! Return the magnification factor.
+    //! @note added in 2.16
+    double magnificationFactor() const;
 
     //! Get list of layer IDs for map rendering
     //! The layers are stored in the reverse order of how they are rendered (layer with index 0 will be on top)
@@ -252,6 +260,17 @@ class CORE_EXPORT QgsMapSettings
 
     void writeXML( QDomNode& theNode, QDomDocument& theDoc );
 
+    /** Sets the segmentation tolerance applied when rendering curved geometries
+    @param tolerance the segmentation tolerance*/
+    void setSegmentationTolerance( double tolerance ) { mSegmentationTolerance = tolerance; }
+    /** Gets the segmentation tolerance applied when rendering curved geometries*/
+    double segmentationTolerance() const { return mSegmentationTolerance; }
+    /** Sets segmentation tolerance type (maximum angle or maximum difference between curve and approximation)
+    @param type the segmentation tolerance typename*/
+    void setSegmentationToleranceType( QgsAbstractGeometryV2::SegmentationToleranceType type ) { mSegmentationToleranceType = type; }
+    /** Gets segmentation tolerance type (maximum angle or maximum difference between curve and approximation)*/
+    QgsAbstractGeometryV2::SegmentationToleranceType segmentationToleranceType() const { return mSegmentationToleranceType; }
+
   protected:
 
     int mDpi;
@@ -261,6 +280,7 @@ class CORE_EXPORT QgsMapSettings
     QgsRectangle mExtent;
 
     double mRotation;
+    double mMagnificationFactor;
 
     QStringList mLayers;
     QMap<QString, QString> mLayerStyleOverrides;
@@ -277,12 +297,15 @@ class CORE_EXPORT QgsMapSettings
 
     QImage::Format mImageFormat;
 
+    double mSegmentationTolerance;
+    QgsAbstractGeometryV2::SegmentationToleranceType mSegmentationToleranceType;
+
+
     // derived properties
     bool mValid; //!< whether the actual settings are valid (set in updateDerived())
     QgsRectangle mVisibleExtent; //!< extent with some additional white space that matches the output aspect ratio
     double mMapUnitsPerPixel;
     double mScale;
-
 
     // utiity stuff
     QgsScaleCalculator mScaleCalculator;
